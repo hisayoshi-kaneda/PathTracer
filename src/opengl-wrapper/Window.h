@@ -25,7 +25,7 @@ enum ProjectionMode {
 
 class Window {
 public:
-    GLFWwindow* window = nullptr;
+    GLFWwindow *window = nullptr;
     int width;
     int height;
     const string win_name;
@@ -46,7 +46,7 @@ public:
 
     ProjectionMode projectionMode = PERSPECTIVE;
 
-    Window(const int width, const int height, const char* window_name)
+    Window(const int width, const int height, const char *window_name)
             : width(width), height(height), win_name(window_name) {
         initialize();
     }
@@ -75,7 +75,7 @@ public:
 
 #ifdef _WIN32
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 #elif __APPLE__
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
@@ -110,22 +110,22 @@ public:
         glfwSetWindowUserPointer(window, this);
 
         //resizeの設定
-        auto resize_callback = [](GLFWwindow* w, int width, int height) {
-            reinterpret_cast<Window*>(glfwGetWindowUserPointer(w))->resize(width, height);
+        auto resize_callback = [](GLFWwindow *w, int width, int height) {
+            reinterpret_cast<Window *>(glfwGetWindowUserPointer(w))->resize(width, height);
         };
         glfwSetWindowSizeCallback(window, resize_callback);
 
         // マウスのイベントを処理する関数を登録
-        auto mouseEvent_callback = [](GLFWwindow* w, int button, int action, int moods) {
-            reinterpret_cast<Window*>(glfwGetWindowUserPointer(w))->mouseEvent(button, action, moods);
+        auto mouseEvent_callback = [](GLFWwindow *w, int button, int action, int moods) {
+            reinterpret_cast<Window *>(glfwGetWindowUserPointer(w))->mouseEvent(button, action, moods);
         };
         glfwSetMouseButtonCallback(window, mouseEvent_callback);
-        auto mouseMoveEvent_callback = [](GLFWwindow* w, double xpos, double ypos) {
-            reinterpret_cast<Window*>(glfwGetWindowUserPointer(w))->mouseMoveEvent(xpos, ypos);
+        auto mouseMoveEvent_callback = [](GLFWwindow *w, double xpos, double ypos) {
+            reinterpret_cast<Window *>(glfwGetWindowUserPointer(w))->mouseMoveEvent(xpos, ypos);
         };
         glfwSetCursorPosCallback(window, mouseMoveEvent_callback);
-        auto wheelEvent_callback = [](GLFWwindow* w, double xpos, double ypos) {
-            reinterpret_cast<Window*>(glfwGetWindowUserPointer(w))->wheelEvent(xpos, ypos);
+        auto wheelEvent_callback = [](GLFWwindow *w, double xpos, double ypos) {
+            reinterpret_cast<Window *>(glfwGetWindowUserPointer(w))->wheelEvent(xpos, ypos);
         };
         glfwSetScrollCallback(window, wheelEvent_callback);
 
@@ -135,8 +135,9 @@ public:
         // カメラの初期化
         int renderBufferWidth, renderBufferHeight;
         glfwGetFramebufferSize(window, &renderBufferWidth, &renderBufferHeight);
-        cout<<renderBufferHeight <<" "<<renderBufferWidth<<endl;
-        projMat = glm::perspective(float(M_PI) / 4.0f, (float)renderBufferWidth / (float)renderBufferHeight, 0.1f, 1000.0f);
+        cout << renderBufferHeight << " " << renderBufferWidth << endl;
+        projMat = glm::perspective(float(M_PI) / 4.0f, (float) renderBufferWidth / (float) renderBufferHeight, 0.1f,
+                                   1000.0f);
         viewMat = glm::lookAt(glm::vec3(3.0f, 4.0f, 5.0f),  // 視点の位置
                               glm::vec3(0.0f, 0.0f, 0.0f),  // 見ている先
                               glm::vec3(0.0f, 1.0f, 0.0f)); // 視界の上方向
@@ -188,12 +189,11 @@ public:
         int renderBufferWidth, renderBufferHeight;
         glfwGetFramebufferSize(window, &renderBufferWidth, &renderBufferHeight);
         glViewport(0, 0, renderBufferWidth, renderBufferHeight);
-        float aspect = (float)renderBufferWidth / (float)renderBufferHeight;
+        float aspect = (float) renderBufferWidth / (float) renderBufferHeight;
         // 投影変換行列の初期化
         if (projectionMode == PERSPECTIVE) {
             projMat = glm::perspective(float(M_PI) / 4.0f, aspect, 0.1f, 1000.0f);
-        }
-        else {
+        } else {
             float size = 10.0f;
             projMat = glm::ortho(-size * aspect, size * aspect, -size, size, 0.1f, 1000.0f);
         }
@@ -211,11 +211,9 @@ public:
         // クリックしたボタンで処理を切り替える
         if (button == GLFW_MOUSE_BUTTON_LEFT) {
             arcballMode = ARCBALL_MODE_ROTATE;
-        }
-        else if (button == GLFW_MOUSE_BUTTON_MIDDLE) {
+        } else if (button == GLFW_MOUSE_BUTTON_MIDDLE) {
             arcballMode = ARCBALL_MODE_SCALE;
-        }
-        else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
+        } else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
             arcballMode = ARCBALL_MODE_TRANSLATE;
         }
 
@@ -229,8 +227,7 @@ public:
                 oldPos = glm::ivec2(px, py);
                 newPos = glm::ivec2(px, py);
             }
-        }
-        else {
+        } else {
             isDragging = false;
             oldPos = glm::ivec2(0, 0);
             newPos = glm::ivec2(0, 0);
@@ -247,8 +244,7 @@ public:
         if (xySquared <= 1.0) {
             // 単位円の内側ならz座標を計算
             pt.z = std::sqrt(1.0 - xySquared);
-        }
-        else {
+        } else {
             // 外側なら球の外枠上にあると考える
             pt = glm::normalize(pt);
         }
@@ -273,12 +269,13 @@ public:
         const glm::vec3 rotAxisObjSpace = glm::vec3(c2oMat * glm::vec4(rotAxis, 0.0f));
 
         // 回転行列の更新
-        acRotMat = glm::rotate((float)(4.0 * angle), rotAxisObjSpace) * acRotMat;
+        acRotMat = glm::rotate((float) (4.0 * angle), rotAxisObjSpace) * acRotMat;
     }
 
     void updateTranslate() {
         // オブジェクト重心のスクリーン座標を求める
-        glm::vec4 gravityScreenSpace = (projMat * viewMat * modelMat) * glm::vec4(gravity.x, gravity.y, gravity.z, 1.0f);
+        glm::vec4 gravityScreenSpace =
+                (projMat * viewMat * modelMat) * glm::vec4(gravity.x, gravity.y, gravity.z, 1.0f);
         gravityScreenSpace /= gravityScreenSpace.w;
 
         // スクリーン座標系における移動量
@@ -316,7 +313,7 @@ public:
                 break;
 
             case ARCBALL_MODE_SCALE:
-                acScale += (float)(oldPos.y - newPos.y) / height;
+                acScale += (float) (oldPos.y - newPos.y) / height;
                 updateScale();
                 break;
         }
@@ -333,8 +330,7 @@ public:
             const double length = dx * dx + dy * dy;
             if (length < 2.0f * 2.0f) {
                 return;
-            }
-            else {
+            } else {
                 updateMouse();
                 oldPos = glm::ivec2(xpos, ypos);
             }
